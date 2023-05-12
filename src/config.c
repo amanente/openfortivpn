@@ -170,6 +170,23 @@ int parse_min_tls(const char *str)
 	}
 }
 
+static char *strdup_with_prefix(const char *input, const char *prefix)
+{
+	size_t prefix_len = strlen(prefix);
+	char *output;
+
+	if (strncmp(prefix, input, prefix_len) == 0)
+		return strdup(input);
+
+	output = malloc(prefix_len + strlen(input) + 1);
+	if (output) {
+		strcpy(output, prefix);
+		strcpy(output + prefix_len, input);
+	}
+	return output;
+}
+
+
 /*
  * Reads filename contents and fill cfg with its values.
  *
@@ -270,7 +287,13 @@ int load_config(struct vpn_config *cfg, const char *filename)
 			}
 			cfg->otp_delay = otp_delay;
 		} else if (strcmp(key, "cookie") == 0) {
-			log_warn("Ignoring option \"%s\" in the config file.\n", key);
+			
+			log_warn("Import option \"%s\" in the config file.\n", key);
+			free(cfg->cookie);
+			cfg->cookie = strdup_with_prefix(val, "SVPNCOOKIE=");
+
+			log_warn("Load Value \"%s\"\n", cfg->cookie);
+
 		} else if (strcmp(key, "cookie-on-stdin") == 0) {
 			log_warn("Ignoring option \"%s\" in the config file.\n", key);
 		} else if (strcmp(key, "no-ftm-push") == 0) {

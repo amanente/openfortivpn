@@ -149,7 +149,6 @@ void destroy_vpn_config(struct vpn_config *cfg);
  * e.g. ownership goes to dest config
  */
 void merge_config(struct vpn_config *dest, struct vpn_config *source);
-
 extern const struct vpn_config invalid_cfg;
 
 #endif
